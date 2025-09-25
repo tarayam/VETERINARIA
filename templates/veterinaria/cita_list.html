@@ -1,0 +1,185 @@
+{% extends 'veterinaria/base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header con título y botón de nueva cita -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="mb-0">
+                <i class="fas fa-calendar-alt me-2"></i>{{ titulo }}
+            </h2>
+            <p class="text-muted">Gestiona las citas de atención veterinaria</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'cita_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Nueva Cita
+            </a>
+        </div>
+    </div>
+
+    <!-- Formulario de filtros y búsqueda -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-search me-2"></i>Filtros de Búsqueda
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="buscar" class="form-label">Buscar</label>
+                    <input type="text" class="form-control" id="buscar" name="buscar" 
+                           value="{{ query }}" placeholder="Mascota, propietario, motivo...">
+                </div>
+                <div class="col-md-3">
+                    <label for="estado" class="form-label">Estado</label>
+                    <select class="form-select" id="estado" name="estado">
+                        <option value="">Todos los estados</option>
+                        {% for valor, texto in estados %}
+                            <option value="{{ valor }}" {% if estado_seleccionado == valor %}selected{% endif %}>
+                                {{ texto }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="fecha" class="form-label">Fecha</label>
+                    <input type="date" class="form-control" id="fecha" name="fecha" value="{{ fecha_seleccionada }}">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-search"></i> Filtrar
+                    </button>
+                    <a href="{% url 'cita_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de citas -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>Citas Registradas
+            </h5>
+            <span class="badge bg-info">{{ page_obj.paginator.count }} cita{{ page_obj.paginator.count|pluralize }}</span>
+        </div>
+        <div class="card-body">
+            {% if citas %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fecha/Hora</th>
+                                <th>Mascota</th>
+                                <th>Propietario</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                                <th>Veterinario</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cita in citas %}
+                            <tr>
+                                <td>
+                                    <strong>{{ cita.fecha_hora|date:"d/m/Y" }}</strong><br>
+                                    <small class="text-muted">{{ cita.fecha_hora|time:"H:i" }}</small>
+                                </td>
+                                <td>
+                                    <strong>{{ cita.mascota.nombre }}</strong><br>
+                                    <small class="text-muted">{{ cita.mascota.tipo_animal.nombre }}</small>
+                                </td>
+                                <td>{{ cita.mascota.propietario_nombre }}</td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ cita.get_tipo_cita_display }}</span>
+                                </td>
+                                <td>
+                                    {% if cita.estado == 'programada' %}
+                                        <span class="badge bg-warning">{{ cita.get_estado_display }}</span>
+                                    {% elif cita.estado == 'confirmada' %}
+                                        <span class="badge bg-info">{{ cita.get_estado_display }}</span>
+                                    {% elif cita.estado == 'en_curso' %}
+                                        <span class="badge bg-primary">{{ cita.get_estado_display }}</span>
+                                    {% elif cita.estado == 'completada' %}
+                                        <span class="badge bg-success">{{ cita.get_estado_display }}</span>
+                                    {% elif cita.estado == 'cancelada' %}
+                                        <span class="badge bg-danger">{{ cita.get_estado_display }}</span>
+                                    {% elif cita.estado == 'no_asistio' %}
+                                        <span class="badge bg-dark">{{ cita.get_estado_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ cita.veterinario|default:"-" }}</td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a href="{% url 'cita_detail' cita.pk %}" 
+                                           class="btn btn-sm btn-outline-info" title="Ver detalles">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        {% if cita.puede_modificarse %}
+                                            <a href="{% url 'cita_update' cita.pk %}" 
+                                               class="btn btn-sm btn-outline-warning" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'cita_delete' cita.pk %}" 
+                                               class="btn btn-sm btn-outline-danger" title="Cancelar">
+                                                <i class="fas fa-times"></i>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginación -->
+                {% if is_paginated %}
+                <nav aria-label="Navegación de páginas">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% if query %}buscar={{ query }}&{% endif %}{% if estado_seleccionado %}estado={{ estado_seleccionado }}&{% endif %}{% if fecha_seleccionada %}fecha={{ fecha_seleccionada }}&{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if num == page_obj.number %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% if query %}buscar={{ query }}&{% endif %}{% if estado_seleccionado %}estado={{ estado_seleccionado }}&{% endif %}{% if fecha_seleccionada %}fecha={{ fecha_seleccionada }}&{% endif %}page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% if query %}buscar={{ query }}&{% endif %}{% if estado_seleccionado %}estado={{ estado_seleccionado }}&{% endif %}{% if fecha_seleccionada %}fecha={{ fecha_seleccionada }}&{% endif %}page={{ page_obj.next_page_number }}">Siguiente</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No hay citas registradas</h5>
+                    <p class="text-muted">Comienza agregando una nueva cita</p>
+                    <a href="{% url 'cita_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Nueva Cita
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

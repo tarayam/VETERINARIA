@@ -1,0 +1,263 @@
+{% extends 'veterinaria/base.html' %}
+
+{% block title %}{{ producto.nombre }} - Sistema Veterinaria{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Header -->
+        <div class="bg-info text-white rounded p-4 mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-2">
+                        <i class="fas fa-eye me-2"></i>
+                        Detalles del Producto
+                    </h1>
+                    <p class="mb-0">Información completa de {{ producto.nombre }}</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a href="{% url 'producto_list' %}" class="btn btn-light">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Volver a Lista
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información del producto -->
+        <div class="row">
+            <!-- Imagen y acciones -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-image me-2"></i>
+                            Imagen
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        {% if producto.imagen %}
+                            <img src="{{ producto.imagen.url }}" 
+                                 alt="{{ producto.nombre }}" 
+                                 class="img-fluid rounded shadow"
+                                 style="max-height: 300px; width: 100%; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center rounded" 
+                                 style="height: 300px;">
+                                <div class="text-center">
+                                    <i class="fas fa-image fa-4x text-muted mb-3"></i>
+                                    <p class="text-muted">Sin imagen disponible</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Acciones -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cogs me-2"></i>
+                            Acciones
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'producto_update' producto.pk %}" 
+                               class="btn btn-warning">
+                                <i class="fas fa-edit me-2"></i>
+                                Editar Producto
+                            </a>
+                            <a href="{% url 'producto_delete' producto.pk %}" 
+                               class="btn btn-danger"
+                               onclick="return confirm('¿Está seguro de eliminar este producto?')">
+                                <i class="fas fa-trash me-2"></i>
+                                Eliminar Producto
+                            </a>
+                            <a href="{% url 'productos_categoria' producto.categoria.id %}" 
+                               class="btn btn-outline-primary">
+                                <i class="fas fa-tag me-2"></i>
+                                Ver Categoría
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información detallada -->
+            <div class="col-lg-8">
+                <!-- Información básica -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Información Básica
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong>Nombre del Producto:</strong>
+                                <br>
+                                <span class="text-primary fs-5">{{ producto.nombre }}</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Categoría:</strong>
+                                <br>
+                                <span class="badge bg-primary fs-6">{{ producto.categoria.nombre }}</span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong>Tipo de Producto:</strong>
+                                <br>
+                                <span class="badge bg-secondary fs-6">{{ producto.get_tipo_producto_display }}</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Código:</strong>
+                                <br>
+                                <code class="fs-6">{{ producto.codigo }}</code>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <strong>Descripción:</strong>
+                            <br>
+                            <p class="mt-2">{{ producto.descripcion }}</p>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong>Precio:</strong>
+                                <br>
+                                <span class="text-success fs-4 fw-bold">${{ producto.precio|floatformat:0 }}</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Stock Disponible:</strong>
+                                <br>
+                                {% if producto.stock > 10 %}
+                                    <span class="badge bg-success fs-6">{{ producto.stock }} unidades</span>
+                                {% elif producto.stock > 5 %}
+                                    <span class="badge bg-warning fs-6">{{ producto.stock }} unidades</span>
+                                {% elif producto.stock > 0 %}
+                                    <span class="badge bg-danger fs-6">{{ producto.stock }} unidades</span>
+                                {% else %}
+                                    <span class="badge bg-dark fs-6">Sin stock</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información médica (si aplica) -->
+                {% if producto.principio_activo or producto.concentracion or producto.laboratorio %}
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-pills me-2"></i>
+                            Información Médica
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if producto.principio_activo %}
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <strong>Principio Activo:</strong>
+                                <br>
+                                <span class="badge bg-info fs-6">{{ producto.principio_activo }}</span>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            {% if producto.concentracion %}
+                            <div class="col-md-6 mb-3">
+                                <strong>Concentración:</strong>
+                                <br>
+                                <span>{{ producto.concentracion }}</span>
+                            </div>
+                            {% endif %}
+                            
+                            {% if producto.laboratorio %}
+                            <div class="col-md-6 mb-3">
+                                <strong>Laboratorio:</strong>
+                                <br>
+                                <span>{{ producto.laboratorio }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Información del sistema -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-database me-2"></i>
+                            Información del Sistema
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong>Estado:</strong>
+                                <br>
+                                {% if producto.activo %}
+                                    <span class="badge bg-success fs-6">Activo</span>
+                                {% else %}
+                                    <span class="badge bg-secondary fs-6">Inactivo</span>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>ID del Producto:</strong>
+                                <br>
+                                <code>{{ producto.pk }}</code>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong>Fecha de Creación:</strong>
+                                <br>
+                                <span>{{ producto.fecha_creacion|date:"d/m/Y H:i" }}</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Última Modificación:</strong>
+                                <br>
+                                <span>{{ producto.fecha_modificacion|date:"d/m/Y H:i" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navegación -->
+                <div class="card mt-4 bg-light">
+                    <div class="card-body">
+                        <h6><i class="fas fa-compass me-2"></i>Navegación Rápida</h6>
+                        <div class="btn-group flex-wrap" role="group">
+                            <a href="{% url 'home' %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-home me-1"></i>
+                                Inicio
+                            </a>
+                            <a href="{% url 'producto_list' %}" class="btn btn-outline-info btn-sm">
+                                <i class="fas fa-list me-1"></i>
+                                Todos los Productos
+                            </a>
+                            <a href="{% url 'productos_categoria' producto.categoria.id %}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-tag me-1"></i>
+                                Productos de {{ producto.categoria.nombre }}
+                            </a>
+                            <a href="{% url 'mantenedor_productos' producto.categoria.id %}" class="btn btn-outline-success btn-sm">
+                                <i class="fas fa-cogs me-1"></i>
+                                Mantenedor
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,230 @@
+{% extends 'veterinaria/base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo }} - Sistema Veterinaria{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Header -->
+        <div class="jumbotron bg-primary text-white rounded p-5 mb-5" style="background: linear-gradient(135deg, #2c5aa0 0%, #1e3d6f 100%);">
+            <div class="container text-center">
+                <h1 class="display-4">
+                    <i class="fas fa-heartbeat me-3"></i>
+                    {{ titulo }}
+                </h1>
+                <p class="lead">Gestión integral de productos y servicios veterinarios</p>
+                <hr class="my-4" style="border-color: rgba(255,255,255,0.3);">
+                <p>Selecciona una categoría para ver los productos disponibles</p>
+            </div>
+        </div>
+
+        <!-- Accesos Rápidos -->
+        <div class="row mb-5">
+            <div class="col-12 mb-4">
+                <h2 class="text-center mb-4">
+                    <i class="fas fa-rocket me-2"></i>
+                    Accesos Rápidos
+                </h2>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 border-primary">
+                    <div class="card-body text-center">
+                        <i class="fas fa-paw fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Mascotas</h5>
+                        <p class="card-text">Gestiona el registro de mascotas y sus propietarios</p>
+                        <a href="{% url 'mascota_list' %}" class="btn btn-primary">Ver Mascotas</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 border-success">
+                    <div class="card-body text-center">
+                        <i class="fas fa-calendar-alt fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Citas</h5>
+                        <p class="card-text">Agenda y gestiona citas de atención veterinaria</p>
+                        <a href="{% url 'cita_list' %}" class="btn btn-success">Ver Citas</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 border-warning">
+                    <div class="card-body text-center">
+                        <i class="fas fa-pills fa-3x text-warning mb-3"></i>
+                        <h5 class="card-title">Productos</h5>
+                        <p class="card-text">Administra medicamentos, alimentos y servicios</p>
+                        <a href="{% url 'producto_list' %}" class="btn btn-warning">Ver Productos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categorías -->
+        {% if categorias %}
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <h2 class="text-center mb-4">
+                        <i class="fas fa-th-large me-2"></i>
+                        Categorías de Productos
+                    </h2>
+                </div>
+            </div>
+            
+            <div class="row">
+                {% for categoria in categorias %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card categoria-card h-100">
+                        {% if categoria.imagen %}
+                            <div class="categoria-imagen-container">
+                                <img src="{{ categoria.imagen.url }}" class="categoria-imagen" alt="{{ categoria.nombre }}">
+                            </div>
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="fas fa-image text-muted" style="font-size: 3rem;"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-primary">
+                                <i class="fas fa-tag me-2"></i>
+                                {{ categoria.nombre }}
+                            </h5>
+                            <p class="card-text flex-grow-1">{{ categoria.descripcion }}</p>
+                            
+                            <div class="mt-auto">
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'productos_categoria' categoria.id %}" 
+                                       class="btn btn-primary">
+                                        <i class="fas fa-eye me-2"></i>
+                                        Ver Productos
+                                    </a>
+                                    <a href="{% url 'mantenedor_productos' categoria.id %}" 
+                                       class="btn btn-outline-secondary">
+                                        <i class="fas fa-cogs me-2"></i>
+                                        Mantenedor
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer text-muted text-center">
+                            <small>
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                Creado: {{ categoria.fecha_creacion|date:"d/m/Y" }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- No hay categorías -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert alert-info text-center" role="alert">
+                        <h4 class="alert-heading">
+                            <i class="fas fa-info-circle me-2"></i>
+                            No hay categorías disponibles
+                        </h4>
+                        <p>Actualmente no hay categorías configuradas en el sistema.</p>
+                        <hr>
+                        <p class="mb-0">
+                            Para comenzar, ve al 
+                            <a href="/admin/" target="_blank" class="alert-link">
+                                <i class="fas fa-external-link-alt me-1"></i>
+                                Django Admin
+                            </a> 
+                            y crea algunas categorías.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Sección de Mascotas -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h2 class="text-center mb-4">
+                    <i class="bi bi-heart-fill text-danger me-2"></i>
+                    Gestión de Mascotas
+                </h2>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3 mb-4">
+                <div class="card h-100 border-danger">
+                    <div class="card-header bg-danger text-white text-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-heart-fill me-2"></i>
+                            Mantenedor de Mascotas
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="bi bi-heart-fill text-danger" style="font-size: 4rem;"></i>
+                        </div>
+                        <h6 class="card-title">Sistema de Gestión de Mascotas</h6>
+                        <p class="card-text">
+                            Registra y gestiona la información completa de las mascotas: 
+                            datos básicos, información del propietario y historial médico.
+                        </p>
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'mascota_list' %}" class="btn btn-danger">
+                                <i class="bi bi-list"></i>
+                                Ver Todas las Mascotas
+                            </a>
+                            <a href="{% url 'mascota_create' %}" class="btn btn-outline-danger">
+                                <i class="bi bi-plus-circle"></i>
+                                Registrar Nueva Mascota
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted text-center">
+                        <small>
+                            <i class="bi bi-shield-check me-1"></i>
+                            Información segura y confidencial
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Información del Sistema
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h6><i class="fas fa-cog me-2"></i>Gestión de Categorías</h6>
+                                <p class="small">Las categorías se crean y gestionan únicamente desde el Django Admin.</p>
+                            </div>
+                            <div class="col-md-3">
+                                <h6><i class="fas fa-pills me-2"></i>Productos</h6>
+                                <p class="small">Los productos se gestionan a través de formularios web con operaciones CRUD.</p>
+                            </div>
+                            <div class="col-md-3">
+                                <h6><i class="bi bi-heart-fill text-danger me-2"></i>Mascotas</h6>
+                                <p class="small">Registro completo de mascotas con información del propietario e historial médico.</p>
+                            </div>
+                            <div class="col-md-3">
+                                <h6><i class="fas fa-search me-2"></i>Búsqueda</h6>
+                                <p class="small">Funcionalidad de búsqueda disponible en cada categoría de productos.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

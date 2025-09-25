@@ -1,0 +1,137 @@
+{% extends 'veterinaria/base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header con título -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-0">
+                <i class="fas fa-exclamation-triangle me-2 text-warning"></i>{{ titulo }}
+            </h2>
+            <p class="text-muted">Confirmación de cancelación</p>
+        </div>
+    </div>
+
+    <!-- Confirmación de cancelación -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-times-circle me-2"></i>¿Está seguro que desea cancelar esta cita?
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Información de la cita a cancelar -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-info-circle me-2"></i>Información de la Cita
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Mascota:</strong> {{ object.mascota.nombre }}</p>
+                                    <p><strong>Propietario:</strong> {{ object.mascota.propietario_nombre }}</p>
+                                    <p><strong>Fecha y Hora:</strong><br>
+                                       {{ object.fecha_hora|date:"d/m/Y" }} a las {{ object.fecha_hora|time:"H:i" }}
+                                    </p>
+                                    <p><strong>Tipo:</strong> {{ object.get_tipo_cita_display }}</p>
+                                    <p><strong>Estado Actual:</strong>
+                                        {% if object.estado == 'programada' %}
+                                            <span class="badge bg-warning">{{ object.get_estado_display }}</span>
+                                        {% elif object.estado == 'confirmada' %}
+                                            <span class="badge bg-info">{{ object.get_estado_display }}</span>
+                                        {% elif object.estado == 'en_curso' %}
+                                            <span class="badge bg-primary">{{ object.get_estado_display }}</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-clipboard-list me-2"></i>Detalles
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Motivo:</strong></p>
+                                    <p class="text-muted">{{ object.motivo }}</p>
+                                    
+                                    {% if object.veterinario %}
+                                    <p><strong>Veterinario:</strong> {{ object.veterinario }}</p>
+                                    {% endif %}
+                                    
+                                    {% if object.precio_estimado %}
+                                    <p><strong>Precio Estimado:</strong> CLP ${{ object.precio_estimado|floatformat:0 }}</p>
+                                    {% endif %}
+                                    
+                                    {% if object.observaciones %}
+                                    <p><strong>Observaciones:</strong></p>
+                                    <p class="text-muted small">{{ object.observaciones }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advertencia -->
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Atención:</strong> Esta acción cambiará el estado de la cita a "Cancelada". 
+                        Una vez cancelada, la cita no podrá ser modificada.
+                    </div>
+
+                    <!-- Formulario de confirmación -->
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-danger w-100">
+                                    <i class="fas fa-times me-2"></i>Sí, Cancelar Cita
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{% url 'cita_detail' object.pk %}" class="btn btn-secondary w-100">
+                                    <i class="fas fa-arrow-left me-2"></i>No, Mantener Cita
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Información adicional -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <a href="{% url 'cita_detail' object.pk %}" class="btn btn-outline-info">
+                                <i class="fas fa-eye me-2"></i>Ver Detalles
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            {% if object.puede_modificarse %}
+                                <a href="{% url 'cita_update' object.pk %}" class="btn btn-outline-warning">
+                                    <i class="fas fa-edit me-2"></i>Editar en su lugar
+                                </a>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{% url 'cita_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-list me-2"></i>Ver Todas las Citas
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

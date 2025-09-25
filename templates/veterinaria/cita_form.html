@@ -1,0 +1,214 @@
+{% extends 'veterinaria/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header con título -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="mb-0">
+                <i class="fas fa-calendar-plus me-2"></i>{{ titulo }}
+            </h2>
+            <p class="text-muted">
+                {% if accion == 'Agendar' %}
+                    Complete la información para agendar una nueva cita
+                {% else %}
+                    Modifique la información de la cita
+                {% endif %}
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'cita_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Volver a Citas
+            </a>
+        </div>
+    </div>
+
+    <!-- Formulario -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                
+                <!-- Mostrar errores generales del formulario -->
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <!-- Información de la Cita -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i>Información de la Cita
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.mascota.id_for_label }}" class="form-label">
+                                    {{ form.mascota.label }}
+                                </label>
+                                {{ form.mascota }}
+                                {% if form.mascota.errors %}
+                                    <div class="text-danger small">{{ form.mascota.errors }}</div>
+                                {% endif %}
+                                <div class="form-text">Seleccione la mascota para la cita</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.fecha_hora.id_for_label }}" class="form-label">
+                                    {{ form.fecha_hora.label }}
+                                </label>
+                                {{ form.fecha_hora }}
+                                {% if form.fecha_hora.errors %}
+                                    <div class="text-danger small">{{ form.fecha_hora.errors }}</div>
+                                {% endif %}
+                                <div class="form-text">Fecha y hora de la cita</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.tipo_cita.id_for_label }}" class="form-label">
+                                    {{ form.tipo_cita.label }}
+                                </label>
+                                {{ form.tipo_cita }}
+                                {% if form.tipo_cita.errors %}
+                                    <div class="text-danger small">{{ form.tipo_cita.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.estado.id_for_label }}" class="form-label">
+                                    {{ form.estado.label }}
+                                </label>
+                                {{ form.estado }}
+                                {% if form.estado.errors %}
+                                    <div class="text-danger small">{{ form.estado.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.motivo.id_for_label }}" class="form-label">
+                                {{ form.motivo.label }}
+                            </label>
+                            {{ form.motivo }}
+                            {% if form.motivo.errors %}
+                                <div class="text-danger small">{{ form.motivo.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">Describa el motivo de la consulta</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detalles Adicionales -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clipboard-list me-2"></i>Detalles Adicionales
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.veterinario.id_for_label }}" class="form-label">
+                                    {{ form.veterinario.label }}
+                                </label>
+                                {{ form.veterinario }}
+                                {% if form.veterinario.errors %}
+                                    <div class="text-danger small">{{ form.veterinario.errors }}</div>
+                                {% endif %}
+                                <div class="form-text">Veterinario que atenderá la cita</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.precio_estimado.id_for_label }}" class="form-label">
+                                    {{ form.precio_estimado.label }}
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    {{ form.precio_estimado }}
+                                </div>
+                                {% if form.precio_estimado.errors %}
+                                    <div class="text-danger small">{{ form.precio_estimado.errors }}</div>
+                                {% endif %}
+                                <div class="form-text">Costo estimado del servicio</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.observaciones.id_for_label }}" class="form-label">
+                                {{ form.observaciones.label }}
+                            </label>
+                            {{ form.observaciones }}
+                            {% if form.observaciones.errors %}
+                                <div class="text-danger small">{{ form.observaciones.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">Observaciones adicionales o instrucciones especiales</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="card">
+                    <div class="card-body text-center">
+                        <button type="submit" class="btn btn-primary me-3">
+                            <i class="fas fa-save me-2"></i>{{ accion }} Cita
+                        </button>
+                        <a href="{% url 'cita_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i>Cancelar
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Script para mejorar la UX del formulario -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Agregar clases de Bootstrap a los campos del formulario
+    const formFields = document.querySelectorAll('input, select, textarea');
+    formFields.forEach(field => {
+        if (!field.classList.contains('btn')) {
+            field.classList.add('form-control');
+        }
+    });
+
+    // Configurar fecha mínima para datetime-local
+    const fechaHoraField = document.getElementById('{{ form.fecha_hora.id_for_label }}');
+    if (fechaHoraField) {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        fechaHoraField.min = now.toISOString().slice(0, 16);
+    }
+
+    // Validación en tiempo real
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        // Validar campos requeridos
+        const requiredFields = form.querySelectorAll('[required]');
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+                field.classList.add('is-valid');
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Por favor, complete todos los campos requeridos.');
+        }
+    });
+});
+</script>
+{% endblock %}

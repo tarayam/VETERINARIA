@@ -1,0 +1,232 @@
+{% extends 'veterinaria/base.html' %}
+
+{% block title %}{{ titulo }} - Sistema Veterinaria{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Encabezado -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>
+                    <i class="bi bi-heart-fill text-danger"></i>
+                    {{ titulo }}
+                </h2>
+                <div>
+                    <a href="{% url 'mascota_update' mascota.pk %}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Editar
+                    </a>
+                    <a href="{% url 'mascota_delete' mascota.pk %}" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </a>
+                </div>
+            </div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'mascota_list' %}">Mascotas</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ mascota.nombre }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información principal -->
+        <div class="col-lg-8">
+            <!-- Información básica -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="bi bi-info-circle"></i> Información de la Mascota</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Nombre:</dt>
+                                <dd class="col-sm-8">{{ mascota.nombre }}</dd>
+
+                                <dt class="col-sm-4">Tipo:</dt>
+                                <dd class="col-sm-8">{{ mascota.tipo_animal.nombre }}</dd>
+
+                                <dt class="col-sm-4">Raza:</dt>
+                                <dd class="col-sm-8">{{ mascota.raza|default:"No especificada" }}</dd>
+
+                                <dt class="col-sm-4">Edad:</dt>
+                                <dd class="col-sm-8">{{ mascota.edad }} años</dd>
+
+                                <dt class="col-sm-4">Sexo:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge bg-{{ mascota.sexo|yesno:'primary,danger' }}">
+                                        {{ mascota.get_sexo_display }}
+                                    </span>
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Tamaño:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge bg-secondary">{{ mascota.get_tamaño_display }}</span>
+                                </dd>
+
+                                <dt class="col-sm-4">Peso:</dt>
+                                <dd class="col-sm-8">{{ mascota.peso }} kg</dd>
+
+                                <dt class="col-sm-4">Color:</dt>
+                                <dd class="col-sm-8">{{ mascota.color|default:"No especificado" }}</dd>
+
+                                <dt class="col-sm-4">Chip:</dt>
+                                <dd class="col-sm-8">
+                                    {% if mascota.numero_chip %}
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i> {{ mascota.numero_chip }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">No registrado</span>
+                                    {% endif %}
+                                </dd>
+
+                                <dt class="col-sm-4">Registro:</dt>
+                                <dd class="col-sm-8">{{ mascota.fecha_registro|date:"d/m/Y H:i" }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del propietario -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="bi bi-person-fill"></i> Información del Propietario</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Nombre:</dt>
+                                <dd class="col-sm-8">{{ mascota.propietario_nombre }}</dd>
+
+                                <dt class="col-sm-4">Teléfono:</dt>
+                                <dd class="col-sm-8">
+                                    {% if mascota.propietario_telefono %}
+                                        <a href="tel:{{ mascota.propietario_telefono }}" class="text-decoration-none">
+                                            <i class="bi bi-telephone"></i> {{ mascota.propietario_telefono }}
+                                        </a>
+                                    {% else %}
+                                        No registrado
+                                    {% endif %}
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Email:</dt>
+                                <dd class="col-sm-8">
+                                    {% if mascota.propietario_email %}
+                                        <a href="mailto:{{ mascota.propietario_email }}" class="text-decoration-none">
+                                            <i class="bi bi-envelope"></i> {{ mascota.propietario_email }}
+                                        </a>
+                                    {% else %}
+                                        No registrado
+                                    {% endif %}
+                                </dd>
+
+                                <dt class="col-sm-4">Dirección:</dt>
+                                <dd class="col-sm-8">{{ mascota.propietario_direccion|default:"No registrada" }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información médica -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="bi bi-heart-pulse"></i> Información Médica</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">Observaciones:</dt>
+                        <dd class="col-sm-9">
+                            {% if mascota.observaciones %}
+                                <div class="p-2 bg-light rounded">{{ mascota.observaciones|linebreaks }}</div>
+                            {% else %}
+                                No hay observaciones registradas
+                            {% endif %}
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <!-- Imagen y acciones -->
+        <div class="col-lg-4">
+            <!-- Imagen de la mascota -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="bi bi-camera"></i> Foto</h5>
+                </div>
+                <div class="card-body text-center">
+                    {% if mascota.imagen %}
+                        <img src="{{ mascota.imagen.url }}" 
+                             class="img-fluid rounded" 
+                             alt="Foto de {{ mascota.nombre }}"
+                             style="max-height: 300px;">
+                    {% else %}
+                        <div class="bg-light p-5 rounded">
+                            <i class="bi bi-camera text-muted" style="font-size: 4rem;"></i>
+                            <p class="text-muted mt-2 mb-0">Sin foto</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Acciones rápidas -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-gear"></i> Acciones</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'mascota_update' mascota.pk %}" class="btn btn-warning">
+                            <i class="bi bi-pencil"></i> Editar Información
+                        </a>
+                        <a href="{% url 'mascota_delete' mascota.pk %}" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Eliminar Mascota
+                        </a>
+                        <a href="{% url 'mascota_list' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver a Lista
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.card-header h5 {
+    margin: 0;
+    color: #495057;
+}
+
+dt {
+    font-weight: 600;
+    color: #495057;
+}
+
+dd {
+    margin-bottom: 0.5rem;
+}
+
+.badge {
+    font-size: 0.85em;
+}
+</style>
+{% endblock %}

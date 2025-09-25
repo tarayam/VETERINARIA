@@ -1,0 +1,97 @@
+/* Estilos para las páginas de productos */
+
+/* Contenedor de imágenes de productos */
+.producto-imagen-container {
+    height: 200px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    position: relative;
+}
+
+/* Imagen de producto centrada */
+.producto-imagen {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;  /* Muestra la imagen completa sin cortarla */
+    border-radius: 0;
+    display: block;
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Transición suave para hover en productos */
+.producto-imagen {
+    transition: transform 0.3s ease;
+}
+
+.card:hover .producto-imagen {
+    transform: translate(-50%, -50%) scale(1.05);
+}
+
+/* Efecto hover para las tarjetas de productos */
+.card {
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
+}
+
+/* Estilos para badges y etiquetas */
+.badge {
+    font-size: 0.75em;
+}
+
+/* Precios destacados */
+.text-success {
+    font-weight: 600;
+}
+
+/* Botones de acción en productos */
+.btn-group .btn {
+    font-size: 0.875rem;
+}
+
+/* Imágenes miniatura en tablas */
+.producto-imagen-mini-container {
+    width: 60px;
+    height: 60px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    position: relative;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.producto-imagen-mini {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 6px;
+}
+
+/* Responsive para móviles */
+@media (max-width: 576px) {
+    .producto-imagen-container {
+        height: 150px;
+    }
+    
+    .producto-imagen-mini-container {
+        width: 50px;
+        height: 50px;
+    }
+}

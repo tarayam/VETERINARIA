@@ -1,0 +1,284 @@
+{% extends 'veterinaria/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ titulo }} - Sistema Veterinaria{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Header -->
+        <div class="bg-primary text-white rounded p-4 mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-2">
+                        <i class="fas fa-{% if form.instance.pk %}edit{% else %}plus{% endif %} me-2"></i>
+                        {{ titulo }}
+                    </h1>
+                    <p class="mb-0">
+                        {% if form.instance.pk %}
+                            Modificar la información del producto
+                        {% else %}
+                            Complete el formulario para agregar un nuevo producto
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a href="{% url 'producto_list' %}" class="btn btn-light">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Volver a Lista
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-{% if form.instance.pk %}edit{% else %}plus-circle{% endif %} me-2"></i>
+                    {% if form.instance.pk %}
+                        Editar Producto: {{ form.instance.nombre }}
+                    {% else %}
+                        Formulario de Nuevo Producto
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Información Básica -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Información Básica
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.categoria.id_for_label }}" class="form-label">
+                                        {{ form.categoria.label }}
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.categoria }}
+                                    {% if form.categoria.errors %}
+                                        <div class="text-danger small">{{ form.categoria.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.tipo_producto.id_for_label }}" class="form-label">
+                                        {{ form.tipo_producto.label }}
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.tipo_producto }}
+                                    {% if form.tipo_producto.errors %}
+                                        <div class="text-danger small">{{ form.tipo_producto.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    <label for="{{ form.nombre.id_for_label }}" class="form-label">
+                                        {{ form.nombre.label }}
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.nombre }}
+                                    {% if form.nombre.errors %}
+                                        <div class="text-danger small">{{ form.nombre.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="{{ form.codigo.id_for_label }}" class="form-label">
+                                        {{ form.codigo.label }}
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.codigo }}
+                                    {% if form.codigo.errors %}
+                                        <div class="text-danger small">{{ form.codigo.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.descripcion.id_for_label }}" class="form-label">
+                                    {{ form.descripcion.label }}
+                                    <span class="text-danger">*</span>
+                                </label>
+                                {{ form.descripcion }}
+                                {% if form.descripcion.errors %}
+                                    <div class="text-danger small">{{ form.descripcion.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.precio.id_for_label }}" class="form-label">
+                                        {{ form.precio.label }}
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        {{ form.precio }}
+                                    </div>
+                                    {% if form.precio.errors %}
+                                        <div class="text-danger small">{{ form.precio.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.stock.id_for_label }}" class="form-label">
+                                        {{ form.stock.label }}
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        {{ form.stock }}
+                                        <span class="input-group-text">unidades</span>
+                                    </div>
+                                    {% if form.stock.errors %}
+                                        <div class="text-danger small">{{ form.stock.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.imagen.id_for_label }}" class="form-label">
+                                    {{ form.imagen.label }}
+                                </label>
+                                {{ form.imagen }}
+                                {% if form.imagen.errors %}
+                                    <div class="text-danger small">{{ form.imagen.errors }}</div>
+                                {% endif %}
+                                {% if form.instance.imagen %}
+                                    <div class="mt-2">
+                                        <small class="text-muted">Imagen actual:</small>
+                                        <br>
+                                        <img src="{{ form.instance.imagen.url }}" 
+                                             alt="Imagen actual" 
+                                             class="img-thumbnail" 
+                                             style="max-width: 150px; max-height: 150px;">
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información Médica (para medicamentos) -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i class="fas fa-pills me-2"></i>
+                                Información Médica (Opcional)
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Complete esta sección solo si el producto es un medicamento.
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.principio_activo.id_for_label }}" class="form-label">
+                                    {{ form.principio_activo.label }}
+                                </label>
+                                {{ form.principio_activo }}
+                                {% if form.principio_activo.errors %}
+                                    <div class="text-danger small">{{ form.principio_activo.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.concentracion.id_for_label }}" class="form-label">
+                                        {{ form.concentracion.label }}
+                                    </label>
+                                    {{ form.concentracion }}
+                                    {% if form.concentracion.errors %}
+                                        <div class="text-danger small">{{ form.concentracion.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.laboratorio.id_for_label }}" class="form-label">
+                                        {{ form.laboratorio.label }}
+                                    </label>
+                                    {{ form.laboratorio }}
+                                    {% if form.laboratorio.errors %}
+                                        <div class="text-danger small">{{ form.laboratorio.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <button type="submit" class="btn btn-primary btn-lg me-3">
+                                <i class="fas fa-save me-2"></i>
+                                {% if form.instance.pk %}
+                                    Actualizar Producto
+                                {% else %}
+                                    Crear Producto
+                                {% endif %}
+                            </button>
+                            <a href="{% url 'producto_list' %}" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times me-2"></i>
+                                Cancelar
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Ayuda -->
+        <div class="card mt-4 bg-light">
+            <div class="card-body">
+                <h6><i class="fas fa-question-circle me-2"></i>Ayuda</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="small mb-0">
+                            <li>Los campos marcados con <span class="text-danger">*</span> son obligatorios</li>
+                            <li>El código debe ser único para cada producto</li>
+                            <li>El precio debe ser mayor a 0</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="small mb-0">
+                            <li>La imagen es opcional pero recomendada</li>
+                            <li>Los campos médicos son solo para medicamentos</li>
+                            <li>El stock puede ser 0 para productos sin inventario</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Agregar clases de Bootstrap a los campos del formulario
+    document.addEventListener('DOMContentLoaded', function() {
+        // Campos de texto y select
+        const inputs = document.querySelectorAll('input[type="text"], input[type="number"], input[type="email"], textarea, select');
+        inputs.forEach(function(input) {
+            input.classList.add('form-control');
+        });
+        
+        // Campos de archivo
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(function(input) {
+            input.classList.add('form-control');
+        });
+    });
+</script>
+{% endblock %}

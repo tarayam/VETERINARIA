@@ -1,0 +1,63 @@
+# Spanish translations for Django admin interface
+# This file is distributed under the same license as the Django package.
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Django\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-22 17:30+0000\n"
+"PO-Revision-Date: 2025-09-22 17:30+0000\n"
+"Last-Translator: \n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Can add log entry"
+msgstr "Puede añadir entrada de registro"
+
+msgid "Can change log entry"
+msgstr "Puede cambiar entrada de registro"
+
+msgid "Can delete log entry"
+msgstr "Puede eliminar entrada de registro"
+
+msgid "Can view log entry"
+msgstr "Puede ver entrada de registro"
+
+msgid "Can add group"
+msgstr "Puede añadir grupo"
+
+msgid "Can change group"
+msgstr "Puede cambiar grupo"
+
+msgid "Can delete group"
+msgstr "Puede eliminar grupo"
+
+msgid "Can view group"
+msgstr "Puede ver grupo"
+
+msgid "Can add permission"
+msgstr "Puede añadir permiso"
+
+msgid "Can change permission"
+msgstr "Puede cambiar permiso"
+
+msgid "Can delete permission"
+msgstr "Puede eliminar permiso"
+
+msgid "Can view permission"
+msgstr "Puede ver permiso"
+
+msgid "Can add user"
+msgstr "Puede añadir usuario"
+
+msgid "Can change user"
+msgstr "Puede cambiar usuario"
+
+msgid "Can delete user"
+msgstr "Puede eliminar usuario"
+
+msgid "Can view user"
+msgstr "Puede ver usuario"

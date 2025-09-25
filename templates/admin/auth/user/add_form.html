@@ -1,0 +1,26 @@
+{% extends "admin/change_form.html" %}
+
+{% block extrahead %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Limpiar campos de autocompletado
+    const usernameField = document.querySelector('#id_username');
+    const password1Field = document.querySelector('#id_password1');
+    const password2Field = document.querySelector('#id_password2');
+    
+    if (usernameField) {
+        usernameField.value = '';
+        usernameField.setAttribute('autocomplete', 'off');
+    }
+    if (password1Field) {
+        password1Field.value = '';
+        password1Field.setAttribute('autocomplete', 'new-password');
+    }
+    if (password2Field) {
+        password2Field.value = '';
+        password2Field.setAttribute('autocomplete', 'new-password');
+    }
+});
+</script>
+{% endblock %}

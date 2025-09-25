@@ -1,0 +1,1 @@
+web: gunicorn veterinaria_sistema.wsgi:application --port $PORT

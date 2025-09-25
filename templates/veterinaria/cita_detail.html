@@ -1,0 +1,246 @@
+{% extends 'veterinaria/base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header con título y botones de acción -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="mb-0">
+                <i class="fas fa-calendar-alt me-2"></i>{{ titulo }}
+            </h2>
+            <p class="text-muted">Detalles de la cita veterinaria</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'cita_list' %}" class="btn btn-secondary me-2">
+                <i class="fas fa-arrow-left me-2"></i>Volver
+            </a>
+            {% if cita.puede_modificarse %}
+                <a href="{% url 'cita_update' cita.pk %}" class="btn btn-warning me-2">
+                    <i class="fas fa-edit me-2"></i>Editar
+                </a>
+                <a href="{% url 'cita_delete' cita.pk %}" class="btn btn-danger">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información de la Cita -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Información de la Cita
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Fecha y Hora:</label>
+                                <p class="mb-0">
+                                    <i class="fas fa-calendar me-2"></i>
+                                    {{ cita.fecha_hora|date:"d/m/Y" }} a las {{ cita.fecha_hora|time:"H:i" }}
+                                    {% if cita.es_pasada %}
+                                        <span class="badge bg-secondary ms-2">Pasada</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Estado:</label>
+                                <p class="mb-0">
+                                    {% if cita.estado == 'programada' %}
+                                        <span class="badge bg-warning fs-6">{{ cita.get_estado_display }}</span>
+                                    {% elif cita.estado == 'confirmada' %}
+                                        <span class="badge bg-info fs-6">{{ cita.get_estado_display }}</span>
+                                    {% elif cita.estado == 'en_curso' %}
+                                        <span class="badge bg-primary fs-6">{{ cita.get_estado_display }}</span>
+                                    {% elif cita.estado == 'completada' %}
+                                        <span class="badge bg-success fs-6">{{ cita.get_estado_display }}</span>
+                                    {% elif cita.estado == 'cancelada' %}
+                                        <span class="badge bg-danger fs-6">{{ cita.get_estado_display }}</span>
+                                    {% elif cita.estado == 'no_asistio' %}
+                                        <span class="badge bg-dark fs-6">{{ cita.get_estado_display }}</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Tipo de Cita:</label>
+                                <p class="mb-0">
+                                    <span class="badge bg-secondary">{{ cita.get_tipo_cita_display }}</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Veterinario:</label>
+                                <p class="mb-0">
+                                    <i class="fas fa-user-md me-2"></i>
+                                    {{ cita.veterinario|default:"No asignado" }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Motivo de la Consulta:</label>
+                        <p class="mb-0">{{ cita.motivo }}</p>
+                    </div>
+
+                    {% if cita.observaciones %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Observaciones:</label>
+                        <p class="mb-0">{{ cita.observaciones }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if cita.precio_estimado %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Precio Estimado:</label>
+                        <p class="mb-0">
+                            <i class="fas fa-dollar-sign me-2"></i>
+                            CLP ${{ cita.precio_estimado|floatformat:0 }}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Información de la Mascota -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-paw me-2"></i>Información de la Mascota
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if cita.mascota.imagen %}
+                    <div class="text-center mb-3">
+                        <img src="{{ cita.mascota.imagen.url }}" alt="{{ cita.mascota.nombre }}" 
+                             class="img-fluid rounded" style="max-height: 200px;">
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-2">
+                        <strong>Nombre:</strong><br>
+                        <a href="{% url 'mascota_detail' cita.mascota.pk %}" class="text-decoration-none">
+                            {{ cita.mascota.nombre }}
+                        </a>
+                    </div>
+
+                    <div class="mb-2">
+                        <strong>Tipo:</strong><br>
+                        {{ cita.mascota.tipo_animal.nombre }}
+                    </div>
+
+                    {% if cita.mascota.raza %}
+                    <div class="mb-2">
+                        <strong>Raza:</strong><br>
+                        {{ cita.mascota.raza }}
+                    </div>
+                    {% endif %}
+
+                    {% if cita.mascota.edad %}
+                    <div class="mb-2">
+                        <strong>Edad:</strong><br>
+                        {{ cita.mascota.edad }} año{{ cita.mascota.edad|pluralize }}
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-2">
+                        <strong>Sexo:</strong><br>
+                        {{ cita.mascota.get_sexo_display }}
+                    </div>
+
+                    {% if cita.mascota.peso %}
+                    <div class="mb-2">
+                        <strong>Peso:</strong><br>
+                        {{ cita.mascota.peso }} kg
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Información del Propietario -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user me-2"></i>Propietario
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>Nombre:</strong><br>
+                        {{ cita.mascota.propietario_nombre }}
+                    </div>
+
+                    {% if cita.mascota.propietario_telefono %}
+                    <div class="mb-2">
+                        <strong>Teléfono:</strong><br>
+                        <a href="tel:{{ cita.mascota.propietario_telefono }}" class="text-decoration-none">
+                            <i class="fas fa-phone me-1"></i>{{ cita.mascota.propietario_telefono }}
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    {% if cita.mascota.propietario_email %}
+                    <div class="mb-2">
+                        <strong>Email:</strong><br>
+                        <a href="mailto:{{ cita.mascota.propietario_email }}" class="text-decoration-none">
+                            <i class="fas fa-envelope me-1"></i>{{ cita.mascota.propietario_email }}
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    {% if cita.mascota.propietario_direccion %}
+                    <div class="mb-2">
+                        <strong>Dirección:</strong><br>
+                        {{ cita.mascota.propietario_direccion }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información de auditoría -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>Información de Control
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                <strong>Fecha de Creación:</strong> {{ cita.fecha_creacion|date:"d/m/Y H:i" }}
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                <strong>Última Modificación:</strong> {{ cita.fecha_modificacion|date:"d/m/Y H:i" }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
