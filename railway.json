@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn veterinaria_sistema.wsgi:application --port $PORT",
+    "startCommand": "python manage.py migrate --settings=veterinaria_sistema.settings_railway && python manage.py collectstatic --noinput --settings=veterinaria_sistema.settings_railway && gunicorn veterinaria_sistema.wsgi:application --bind 0.0.0.0:$PORT",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
