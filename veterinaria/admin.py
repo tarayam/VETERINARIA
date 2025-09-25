@@ -5,16 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import gettext_lazy as _
 from django import forms
-from .models import Categoria
-
-from django.contrib import admin
-from django.contrib.admin import AdminSite
-from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.utils.translation import gettext_lazy as _
-from django import forms
-from .models import Categoria, TipoAnimal, Cita, Mascota
+from .models import Categoria, TipoAnimal, Cita, Mascota, Veterinario
 
 # Parchear el validador de username en el modelo User
 def validador_flexible(self):
@@ -214,6 +205,30 @@ class CitaAdmin(admin.ModelAdmin):
         """Mostrar el nombre del propietario de la mascota"""
         return obj.mascota.propietario_nombre
     propietario_mascota.short_description = 'Propietario'
+
+# Configuración del Admin para Veterinario
+@admin.register(Veterinario)
+class VeterinarioAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'especialidad', 'telefono', 'email', 'activo', 'fecha_ingreso')
+    list_filter = ('activo', 'especialidad', 'fecha_ingreso')
+    search_fields = ('nombre', 'especialidad', 'numero_colegiado', 'email')
+    list_editable = ('activo',)
+    fieldsets = (
+        ('Información Personal', {
+            'fields': ('nombre', 'especialidad', 'numero_colegiado')
+        }),
+        ('Contacto', {
+            'fields': ('telefono', 'email')
+        }),
+        ('Información Laboral', {
+            'fields': ('fecha_ingreso', 'activo')
+        }),
+    )
+    
+    def get_queryset(self, request):
+        """Mostrar solo veterinarios activos por defecto"""
+        qs = super().get_queryset(request)
+        return qs.filter(activo=True) if not request.GET.get('activo__exact') else qs
 
 # Nota: El modelo Mascota NO se registra aquí - se gestiona por formularios web
 

@@ -2,6 +2,28 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
+class Veterinario(models.Model):
+    """
+    Modelo para los veterinarios de la clínica.
+    Solo se gestiona desde Django Admin.
+    """
+    nombre = models.CharField(max_length=100, verbose_name="Nombre completo")
+    especialidad = models.CharField(max_length=100, verbose_name="Especialidad", blank=True)
+    telefono = models.CharField(max_length=20, verbose_name="Teléfono", blank=True)
+    email = models.EmailField(verbose_name="Email", blank=True)
+    numero_colegiado = models.CharField(max_length=50, verbose_name="Número de colegiado", blank=True)
+    activo = models.BooleanField(default=True, verbose_name="Activo")
+    fecha_ingreso = models.DateField(verbose_name="Fecha de ingreso", blank=True, null=True)
+    
+    class Meta:
+        verbose_name = "Veterinario"
+        verbose_name_plural = "Veterinarios"
+        ordering = ['nombre']
+    
+    def __str__(self):
+        especialidad_text = f" - {self.especialidad}" if self.especialidad else ""
+        return f"Dr. {self.nombre}{especialidad_text}"
+
 class Categoria(models.Model):
     """
     Modelo para las categorías de productos veterinarios.
@@ -75,6 +97,7 @@ class Mascota(models.Model):
     propietario_direccion = models.TextField(verbose_name="Dirección del propietario", blank=True)
     
     # Información médica
+    veterinario_encargado = models.ForeignKey(Veterinario, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Veterinario encargado")
     numero_chip = models.CharField(max_length=50, unique=True, verbose_name="Número de microchip", blank=True, null=True)
     observaciones = models.TextField(verbose_name="Observaciones médicas", blank=True)
     imagen = models.ImageField(upload_to='mascotas/', verbose_name="Foto de la mascota", blank=True, null=True)

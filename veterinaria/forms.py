@@ -6,7 +6,7 @@ from decimal import Decimal
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Div, HTML
 from crispy_forms.bootstrap import Field
-from .models import Producto, Categoria, Mascota, TipoAnimal, Cita
+from .models import Producto, Categoria, Mascota, TipoAnimal, Cita, Veterinario
 
 class ProductoForm(forms.ModelForm):
     """
@@ -235,8 +235,8 @@ class MascotaForm(forms.ModelForm):
         fields = [
             'tipo_animal', 'nombre', 'raza', 'edad', 'sexo', 'tamaño', 
             'peso', 'color', 'propietario_nombre', 'propietario_telefono', 
-            'propietario_email', 'propietario_direccion', 'numero_chip',
-            'observaciones', 'imagen'
+            'propietario_email', 'propietario_direccion', 'veterinario_encargado',
+            'numero_chip', 'observaciones', 'imagen'
         ]
         widgets = {
             'observaciones': forms.Textarea(attrs={'rows': 3}),
@@ -258,6 +258,7 @@ class MascotaForm(forms.ModelForm):
             'propietario_telefono': 'Teléfono del Propietario (opcional)',
             'propietario_email': 'Email del Propietario (opcional)',
             'propietario_direccion': 'Dirección del Propietario (opcional)',
+            'veterinario_encargado': 'Veterinario Encargado (opcional)',
             'numero_chip': 'Microchip de Identificación (opcional)',
             'observaciones': 'Observaciones Médicas (opcional)',
             'imagen': 'Foto de la Mascota (opcional)',
@@ -273,6 +274,9 @@ class MascotaForm(forms.ModelForm):
         
         # Solo mostrar tipos de animal activos
         self.fields['tipo_animal'].queryset = TipoAnimal.objects.filter(activo=True)
+        
+        # Solo mostrar veterinarios activos
+        self.fields['veterinario_encargado'].queryset = Veterinario.objects.filter(activo=True)
         
         # Configurar el layout del formulario
         self.helper.layout = Layout(
@@ -315,6 +319,7 @@ class MascotaForm(forms.ModelForm):
             HTML('<div class="card mt-3">'),
             HTML('<div class="card-header"><h5>Información Médica</h5></div>'),
             HTML('<div class="card-body">'),
+            'veterinario_encargado',
             'observaciones',
             HTML('</div></div>'),
             
